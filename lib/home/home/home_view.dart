@@ -20,7 +20,7 @@ class HomePage extends StatelessWidget {
               appBar: AppBar(
                 backgroundColor: grey100,
                 title: Text(
-                  'main',
+                  cubit.headlines[cubit.currentIndex],
                   style: TextStyle(color: black),
                 ),
                 elevation: 0,
