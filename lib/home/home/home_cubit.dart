@@ -12,6 +12,7 @@ class HomeCubit extends Cubit<HomeStates> {
   HomeCubit get(context) => BlocProvider.of(context);
 
   int currentIndex = 0;
+  List<String> headlines =['home screen','Notifications Screen','Chat Screen'];
   List<Widget> navItem = [Feeds(), NotificationsScreen(), ChatScreen()];
   PageController pageController=PageController();
   void changeBottomNav(int index) {
