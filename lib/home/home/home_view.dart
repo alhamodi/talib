@@ -31,14 +31,14 @@ class HomePage extends StatelessWidget {
                       icon: Iconly_Broken.Info_Circle, function: () {})
                 ],
               ),
-               body: PageView(
-                 physics: BouncingScrollPhysics(),
-                 controller: cubit.pageController,
-                 children: cubit.navItem,
-                 onPageChanged: (index) {
-                   cubit.changeBottomNav(index);
-                 },
-               ),
+              body: PageView(
+                physics: BouncingScrollPhysics(),
+                controller: cubit.pageController,
+                children: cubit.navItem,
+                onPageChanged: (index) {
+                  cubit.changeBottomNav(index);
+                },
+              ),
               bottomNavigationBar: Container(
                 decoration: BoxDecoration(
                   shape: BoxShape.circle,
