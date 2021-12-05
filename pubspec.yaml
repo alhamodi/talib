@@ -36,12 +36,16 @@ dependencies:
   cupertino_icons: ^1.0.2
   bloc: ^7.0.0
   flutter_bloc:
+  shared_preferences: ^2.0.6
 
 dev_dependencies:
   flutter_test:
     sdk: flutter
 flutter:
   uses-material-design: true
+
+  assets:
+   - assets/images/
 
   fonts:
     - family: Iconly-Broken
