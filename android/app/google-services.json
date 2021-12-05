@@ -1,0 +1,46 @@
+{
+  "project_info": {
+    "project_number": "468308705408",
+    "project_id": "talib-b3be8",
+    "storage_bucket": "talib-b3be8.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:468308705408:android:4525ed943b37fa50502665",
+        "android_client_info": {
+          "package_name": "com.example.talib"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "468308705408-1521lfr6chvmogfefptfic1p7j6ubrm8.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyB9QqeNZn9oMfCbvGgVcDps0gmZJWF5Xbg"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "468308705408-1521lfr6chvmogfefptfic1p7j6ubrm8.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "468308705408-tpf0n5152nr38lh7rcmbp1jqvqo89t49.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.app.talib"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

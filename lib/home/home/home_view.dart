@@ -6,6 +6,9 @@ import 'package:talib/shared/colors.dart';
 import 'package:talib/shared/iconly-broken_icons.dart';
 
 class HomePage extends StatelessWidget {
+  final bool afterLoginOrRegister;
+
+  const HomePage({Key? key,required this.afterLoginOrRegister}) : super(key: key);
   @override
   Widget build(BuildContext context) {
     return BlocProvider(
@@ -31,33 +34,31 @@ class HomePage extends StatelessWidget {
                       icon: Iconly_Broken.Info_Circle, function: () {})
                 ],
               ),
-               body: PageView(
-                 physics: BouncingScrollPhysics(),
-                 controller: cubit.pageController,
-                 children: cubit.navItem,
-                 onPageChanged: (index) {
-                   cubit.changeBottomNav(index);
-                 },
-               ),
-              bottomNavigationBar: Container(
-                decoration: BoxDecoration(
-                  shape: BoxShape.circle,
-                ),
-                child: BottomNavigationBar(
-                  items: [
-                    BottomNavigationBarItem(
-                        icon: Icon(Iconly_Broken.Home), label: 'Home'),
-                    BottomNavigationBarItem(
-                        icon: Icon(Iconly_Broken.Notification),
-                        label: 'Notification'),
-                    BottomNavigationBarItem(
-                        icon: Icon(Iconly_Broken.Chat), label: 'Chat'),
-                  ],
-                  currentIndex: cubit.currentIndex,
-                  onTap: (index) {
-                    cubit.changeBottomNav(index);
-                  },
-                ),
+              body: PageView(
+                physics: BouncingScrollPhysics(),
+                controller: cubit.pageController,
+                children: cubit.navItem,
+                onPageChanged: (index) {
+                  cubit.changeBottomNav(index);
+                },
+              ),
+              bottomNavigationBar: BottomNavigationBar(
+                items: [
+                  BottomNavigationBarItem(
+                      icon: Icon(Iconly_Broken.Home),
+                      label: 'Home'),
+                  BottomNavigationBarItem(
+                      icon: Icon(Iconly_Broken.Notification),
+                      label: 'Notification'),
+                  BottomNavigationBarItem(
+                      icon: Icon(Iconly_Broken.Chat),
+                      label: 'Chat'),
+                ],
+                currentIndex: cubit.currentIndex,
+                onTap: (index) {
+                  cubit.changeBottomNav(index);
+                  cubit.pageController.jumpToPage(index);
+                },
               ),
             );
           }),
