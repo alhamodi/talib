@@ -3,7 +3,6 @@ import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:talib/home/home/home_cubit.dart';
 import 'package:talib/home/home/home_state.dart';
-import 'package:talib/modules/chat_screen/friends_screen/friends_screen.dart';
 import 'package:talib/modules/profile/profile.dart';
 import 'package:talib/modules/search_screen/search_screen.dart';
 import 'package:talib/shared/colors.dart';
@@ -29,6 +28,7 @@ class _HomePageState extends State<HomePage> {
 
   @override
   Widget build(BuildContext context) {
+
     return Builder(builder: (context) {
       if (afterLoginOrRegister == true) {
         HomeCubit.get(context).getUserData();
