@@ -13,7 +13,7 @@ import 'package:talib/models/notification_model.dart';
 import 'package:talib/models/post_model.dart';
 import 'package:talib/models/recent_messages_model.dart';
 import 'package:talib/models/user_model.dart';
-import 'package:talib/modules/chat_screen/chat_screen.dart';
+import 'package:talib/modules/chat_screen/friends_screen/friends_screen.dart';
 import 'package:talib/modules/feeds_screen/feeds_screen.dart';
 import 'package:talib/modules/notifications_screen/notifications_screen.dart';
 import 'package:talib/shared/components.dart';
@@ -25,9 +25,9 @@ class HomeCubit extends Cubit<HomeStates> {
 
  int currentIndex = 0;
 
-  List<String> headlines =['home screen','Notifications Screen','Chat Screen'];
+  List<String> headlines =['Talib','Notifications','Chats'];
 
-  List<Widget> navItem = [FeedsScreen(), NotificationScreen(), ChatScreen()];
+  List<Widget> navItem = [FeedsScreen(), NotificationScreen(), FriendsScreen()];
 
   PageController pageController=PageController();
 

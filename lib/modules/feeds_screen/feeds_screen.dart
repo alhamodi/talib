@@ -1,13 +1,14 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_conditional_rendering/conditional.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
+import 'package:talib/modules/chat_screen/recent_messages_screen/recent_messages_screen.dart';
 import 'package:talib/modules/new_post_screen/new_post_screen.dart';
 import 'package:talib/shared/colors.dart';
 import 'package:talib/shared/components.dart';
 import 'package:talib/home/home/home_cubit.dart';
 import 'package:talib/home/home/home_state.dart';
+import 'package:talib/shared/iconly-broken_icons.dart';
 
 class FeedsScreen extends StatefulWidget {
   const FeedsScreen({Key? key}) : super(key: key);
@@ -28,95 +29,46 @@ class _FeedsScreenState extends State<FeedsScreen> {
 
           return Conditional.single(
             context: context,
-            conditionBuilder: (BuildContext context) =>
-                cubit.posts.length >= 0 == true,
-            widgetBuilder: (BuildContext context) => SingleChildScrollView(
-              physics: BouncingScrollPhysics(),
-              child: Column(
-                children: [
-                  Card(
-                    elevation: 10,
-                    clipBehavior: Clip.antiAliasWithSaveLayer,
-                    child: Stack(children: [
-                      cacheImage(
-                        url:
-                        "https://image.freepik.com/free-photo/young-man-using-his-phone-by-purple-glitter-wall_53876-98101.jpg",
-                        height: 150,
-                        width: double.infinity,
-                      ),
-                      const Padding(
-                        padding: EdgeInsets.all(8.0),
-                        child: Text(
-                          'Communicate With Friends',
-                          style: TextStyle(fontWeight: FontWeight.bold),
-                        ),
-                      )
-                    ]),
-                  ),
-
-                  Card(
-                    color: subColor,
-                    clipBehavior: Clip.antiAlias,
-                    elevation: 5,
-                    child: Column(
-                      children: [
-                        Padding(
-                          padding: const EdgeInsets.all(12.0),
-                          child: Row(
-                            crossAxisAlignment: CrossAxisAlignment.center,
-                            children: [
-                              cacheImage(
-                                url:'${cubit.model!.profileImage}',
-                                  width: 50,
-                                  height: 50,
-                                  shape: BoxShape.circle),
-                              SizedBox(
-                                width: 10,
-                              ),
-                              Expanded(
-                                child: InkWell(
-                                  onTap: () {
-                                    navigateTo(context, NewPostScreen());
-                                  },
-                                  child: Container(
-                                    height: 40,
-                                    width: double.infinity,
-                                    decoration: BoxDecoration(
-
-                                      borderRadius: BorderRadius.circular(20),
-                                      border: Border.all(width: 1.1)
-                                    ),
-                                    child: Center(
-                                      child: Text(
-                                        'Share your creativity ...',
-                                        style: TextStyle(color: Colors.black,fontSize: 16),
-                                        maxLines: 1,
-                                        overflow: TextOverflow.ellipsis,
-                                      ),
-                                    ),
-                                  ),
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
-
-                      ],
+            conditionBuilder: (BuildContext context) => cubit.posts.length >= 0,
+            widgetBuilder: (BuildContext context) => Scaffold(
+              backgroundColor: grey100,
+              body: SingleChildScrollView(
+                physics: BouncingScrollPhysics(),
+                child: Column(
+                  children: [
+                    SizedBox(
+                      height: 10,
                     ),
-                  ),
-                  ListView.separated(
-                      physics: NeverScrollableScrollPhysics(),
-                      shrinkWrap: true,
-                      itemBuilder: (context, index) =>
-                          singlePostBuilder(cubit.posts[index], context, index),
-                      separatorBuilder: (context, index) => SizedBox(
-                            height: 10,
-                          ),
-                      itemCount: cubit.posts.length),
-                  SizedBox(
-                    height: 20,
-                  )
-                ],
+                    cacheImage(
+                      url:
+                          "https://image.freepik.com/free-vector/group-young-children-cartoon-character-white-background_1308-51457.jpg",
+                      height: 150,
+                      width: double.infinity,
+                    ),
+                RecentMessagesScreen(),
+                    SizedBox(
+                      height: 20,
+                    ),
+                    ListView.separated(
+                        physics: NeverScrollableScrollPhysics(),
+                        shrinkWrap: true,
+                        itemBuilder: (context, index) => singlePostBuilder(
+                            cubit.posts[index], context, index),
+                        separatorBuilder: (context, index) => SizedBox(
+                              height: 10,
+                            ),
+                        itemCount: cubit.posts.length),
+                    SizedBox(
+                      height: 10,
+                    )
+                  ],
+                ),
+              ),
+              floatingActionButton: FloatingActionButton(
+                onPressed: () {
+                  navigateTo(context, NewPostScreen());
+                },
+                child: Icon(Iconly_Broken.Edit),
               ),
             ),
             fallbackBuilder: (BuildContext context) => Center(

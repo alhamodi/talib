@@ -15,6 +15,7 @@ import 'package:flutter_conditional_rendering/flutter_conditional_rendering.dart
 class CommentsScreen extends StatefulWidget {
   final String? postUid;
   final String? receiverUid;
+
   CommentsScreen(this.postUid, this.receiverUid);
 
   @override
@@ -37,7 +38,6 @@ class _CommentsScreenState extends State<CommentsScreen> {
             },
             icon: Icon(
               Iconly_Broken.Arrow___Left_2,
-              color: mainColor,
             ),
           ),
           centerTitle: false,
@@ -45,13 +45,10 @@ class _CommentsScreenState extends State<CommentsScreen> {
               statusBarColor: Colors.transparent,
               statusBarIconBrightness: Brightness.dark),
           elevation: 0,
-          backgroundColor: Colors.green.withOpacity(0.4),
-          backwardsCompatibility: false,
           titleSpacing: 5,
           title: Text(
             'Comments',
             style: TextStyle(
-              color: mainColor,
             ),
           ),
         ),
@@ -66,7 +63,6 @@ class _CommentsScreenState extends State<CommentsScreen> {
               if (!snapshot.hasData) {
                 return Center(
                   child: CircularProgressIndicator(
-                    color: Colors.green,
                   ),
                 );
               } else {
@@ -111,8 +107,8 @@ class _CommentsScreenState extends State<CommentsScreen> {
                                               angle: 0,
                                               child: CircleAvatar(
                                                   radius: 20,
-                                                  backgroundColor:
-                                                      Colors.green.withOpacity(0.1),
+                                                  backgroundColor: Colors.green
+                                                      .withOpacity(0.1),
                                                   child: Icon(
                                                     Iconly_Broken.Image,
                                                     size: 20,
@@ -142,13 +138,13 @@ class _CommentsScreenState extends State<CommentsScreen> {
                                             disabledBorder: InputBorder.none,
                                             border: InputBorder.none,
                                             fillColor: Colors.grey,
-                                            hintText: 'comment..',
+                                            hintText: 'comment...',
                                           ),
                                           autocorrect: true,
                                           controller: commentController,
                                           validator: (value) {
                                             if (value!.isEmpty) {
-                                              return 'The comment can\'t be empty';
+                                              return "The comment can't be empty";
                                             }
                                             return null;
                                           },
@@ -163,8 +159,8 @@ class _CommentsScreenState extends State<CommentsScreen> {
                                               angle: 2400,
                                               child: CircleAvatar(
                                                   radius: 20,
-                                                  backgroundColor:
-                                                      Colors.green.withOpacity(0.1),
+                                                  backgroundColor: Colors.green
+                                                      .withOpacity(0.1),
                                                   child: Icon(
                                                     Iconly_Broken.Send,
                                                     size: 20,
@@ -175,20 +171,20 @@ class _CommentsScreenState extends State<CommentsScreen> {
                                                   .validate() ==
                                               true) {
                                             print('comment');
-                                            HomeCubit.get(context)
-                                                .sendComment(
-                                                    dateTime: DateTime.now()
-                                                        .toString(),
-                                                    text:
-                                                        commentController.text,
-                                                    postUid: widget.postUid);
+                                            HomeCubit.get(context).sendComment(
+                                                dateTime:
+                                                    DateTime.now().toString(),
+                                                text: commentController.text,
+                                                postUid: widget.postUid);
                                             HomeCubit.get(context)
                                                 .sendNotifications(
-                                                action: 'COMMENT',
-                                                targetPostUid: widget.postUid,
-                                                receiverUid: widget.receiverUid,
-                                                dateTime: DateTime.now()
-                                                    .toString());
+                                                    action: 'COMMENT',
+                                                    targetPostUid:
+                                                        widget.postUid,
+                                                    receiverUid:
+                                                        widget.receiverUid,
+                                                    dateTime: DateTime.now()
+                                                        .toString());
                                             commentController.text = '';
                                           }
                                         },
@@ -209,7 +205,6 @@ class _CommentsScreenState extends State<CommentsScreen> {
                                       'No comments yet,\nPut your comment')),
                             )),
                             Container(
-                              color: Colors.green.withOpacity(0.3),
                               child: Padding(
                                 padding: const EdgeInsets.only(
                                     left: 10, right: 10, bottom: 5),
@@ -225,8 +220,6 @@ class _CommentsScreenState extends State<CommentsScreen> {
                                               angle: 0,
                                               child: CircleAvatar(
                                                   radius: 20,
-                                                  backgroundColor:
-                                                      Colors.green.withOpacity(0.1),
                                                   child: Icon(
                                                     Iconly_Broken.Image,
                                                     size: 20,
@@ -277,8 +270,6 @@ class _CommentsScreenState extends State<CommentsScreen> {
                                               angle: 2400,
                                               child: CircleAvatar(
                                                   radius: 20,
-                                                  backgroundColor:
-                                                      Colors.green.withOpacity(0.1),
                                                   child: Icon(
                                                     Iconly_Broken.Send,
                                                     size: 20,
@@ -289,18 +280,18 @@ class _CommentsScreenState extends State<CommentsScreen> {
                                                   .validate() ==
                                               true) {
                                             print('comment');
-                                            HomeCubit.get(context)
-                                                .sendComment(
-                                                    dateTime: DateTime.now()
-                                                        .toString(),
-                                                    text:
-                                                        commentController.text,
-                                                    postUid: widget.postUid);
+                                            HomeCubit.get(context).sendComment(
+                                                dateTime:
+                                                    DateTime.now().toString(),
+                                                text: commentController.text,
+                                                postUid: widget.postUid);
                                             HomeCubit.get(context)
                                                 .sendNotifications(
                                                     action: 'COMMENT',
-                                                    targetPostUid: widget.postUid,
-                                                    receiverUid: widget.receiverUid,
+                                                    targetPostUid:
+                                                        widget.postUid,
+                                                    receiverUid:
+                                                        widget.receiverUid,
                                                     dateTime: DateTime.now()
                                                         .toString());
                                             commentController.text = '';

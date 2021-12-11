@@ -171,30 +171,28 @@ void printFullText(String text) {
 // post builder
 Widget singlePostBuilder(PostModel post, context, index) {
   return Card(
-    color: subColor,
     clipBehavior: Clip.antiAlias,
-    elevation: 10,
     child: Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Padding(
-          padding: const EdgeInsets.all(12.0),
-          child: InkWell(
-            onTap: () {
-              if (post.uid == uid) {
-                navigateTo(context, ProfileScreen());
-              } else {
-                HomeCubit.get(context).getAllPersonUsers(personUid: post.uid);
-                HomeCubit.get(context)
-                    .getAnotherPersonData(personUid: post.uid);
-                HomeCubit.get(context).getPersonPosts(personUid: post.uid);
-                navigateTo(
-                    context,
-                    PersonProfileScreen(
-                      personUid: post.uid,
-                    ));
-              }
-            },
+        InkWell(
+          onTap: () {
+            if (post.uid == uid) {
+              navigateTo(context, ProfileScreen());
+            } else {
+              HomeCubit.get(context).getAllPersonUsers(personUid: post.uid);
+              HomeCubit.get(context)
+                  .getAnotherPersonData(personUid: post.uid);
+              HomeCubit.get(context).getPersonPosts(personUid: post.uid);
+              navigateTo(
+                  context,
+                  PersonProfileScreen(
+                    personUid: post.uid,
+                  ));
+            }
+          },
+          child: Padding(
+            padding: const EdgeInsets.only(left: 12.0,top: 12),
             child: Row(
               crossAxisAlignment: CrossAxisAlignment.center,
               children: [
@@ -269,10 +267,10 @@ Widget singlePostBuilder(PostModel post, context, index) {
               width: double.infinity,
               clipBehavior: Clip.antiAlias,
               decoration: BoxDecoration(),
-              child: Image(
-                image: NetworkImage('${post.postImage}'),
-                fit: BoxFit.cover,
-              ),
+              child: cacheImage(url:'${post.postImage}',
+                  width: double.infinity,
+                  height: 200,
+                  shape: BoxShape.rectangle),
             ),
           ),
         Padding(
@@ -837,16 +835,15 @@ Widget singlePersonPostBuilder(PostModel post, context, index) {
 
 //replace every single follower by single user for inkwell is ready there
 Widget singleFollowerBuilder(UserModel user, context) => Padding(
-  padding: const EdgeInsets.only(top: 12, left: 12, right: 12),
+  padding: const EdgeInsets.all(12),
   child: Row(
     crossAxisAlignment: CrossAxisAlignment.center,
     children: [
-      CircleAvatar(
-        radius: 23,
-        backgroundImage: NetworkImage(
-          '${user.profileImage}',
-        ),
-      ),
+     cacheImage(url: '${user.profileImage}',
+         width: 50,
+         height: 50,
+         shape: BoxShape.circle,
+     ),
       SizedBox(
         width: 10,
       ),
@@ -877,16 +874,7 @@ Widget singleFollowerBuilder(UserModel user, context) => Padding(
           ],
         ),
       ),
-      // IconButton(
-      //     onPressed: () {},
-      //     icon: Icon(
-      //       Iconly_Broken.Arrow___Down_2,
-      //       color: subColor,
-      //     ))
-
-      optionIcon(function: () {
-        print('option');
-      }),
+      Icon(Iconly_Broken.Chat,color: subColor,)
     ],
   ),
 );
@@ -1048,21 +1036,6 @@ Widget personMessage(
           HomeCubit.get(context)
               .deleteChat(r.receiverId == uid ? r.senderId : r.receiverId);
           break;
-        case DismissDirection.vertical:
-          // TODO: Handle this case.
-          break;
-        case DismissDirection.horizontal:
-          // TODO: Handle this case.
-          break;
-        case DismissDirection.up:
-          // TODO: Handle this case.
-          break;
-        case DismissDirection.down:
-          // TODO: Handle this case.
-          break;
-        case DismissDirection.none:
-          // TODO: Handle this case.
-          break;
       }
     },
     child: InkWell(
@@ -1152,44 +1125,6 @@ Widget personMessage(
   );
 }
 
-Widget optionIcon({required Function function}) {
-  return InkWell(
-    onTap: () {
-      function();
-    },
-    child: Container(
-      height: 40,
-      width: 40,
-      child: Center(
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.center,
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: [
-            CircleAvatar(
-              backgroundColor: subColor,
-              radius: 1.5,
-            ),
-            SizedBox(
-              width: 1,
-            ),
-            CircleAvatar(
-              backgroundColor: subColor,
-              radius: 1.5,
-            ),
-            SizedBox(
-              width: 1,
-            ),
-            CircleAvatar(
-              backgroundColor: subColor,
-              radius: 1.5,
-            ),
-          ],
-        ),
-      ),
-    ),
-  );
-}
-
 Widget cacheImage({
   required String url,
   required double width,
@@ -1213,4 +1148,14 @@ Widget cacheImage({
     placeholder: (context, url) => Center(child: CircularProgressIndicator()),
     errorWidget: (context, url, error) => Icon(Icons.error),
   );
+}
+
+
+Widget defaultIconButton({required IconData icon, required var function}) {
+  return IconButton(
+      onPressed: function,
+      icon: Icon(
+        icon,
+        color: black,
+      ));
 }
