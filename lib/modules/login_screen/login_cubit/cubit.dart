@@ -1,7 +1,5 @@
-import 'package:bloc/bloc.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:talib/models/user_model.dart';
 import 'package:talib/modules/login_screen/login_cubit/states.dart';
 
 class LoginCubit extends Cubit<LoginStates> {

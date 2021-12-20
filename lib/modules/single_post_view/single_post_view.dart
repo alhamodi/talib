@@ -1,4 +1,3 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -61,7 +60,7 @@ class _SinglePostViewScreenState extends State<SinglePostViewScreen> {
                             HomeCubit.get(context).singlePost!, context))
                     : Center(
                         child: CircularProgressIndicator(
-                        color: Colors.green,
+                        color: mainColor,
                       ));
               },
             ),

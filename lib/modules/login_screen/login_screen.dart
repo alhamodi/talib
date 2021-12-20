@@ -75,106 +75,92 @@ class _LoginScreenState extends State<LoginScreen> {
                       ),
                       Form(
                         key: formKey,
-                        child: Padding(
-                          padding: const EdgeInsets.all(8.0),
-                          child: Column(
-                            children: [
-                              defaultTextField(
-                                  onSubmit: (value) {
-                                    print(value);
-                                  },
-                                  onTap: () {},
-                                  textForUnValid: 'Enter your username',
-                                  controller: emailController,
-                                  type: TextInputType.emailAddress,
-                                  text: 'Email',
-                                  prefix: Icons.alternate_email),
-                              defaultTextField(
-                                  onSubmit: (value) {
-                                    if (formKey.currentState!.validate() ==
-                                        true) {
-                                      // cubit.userLogin(
-                                      //     email: emailController.text,
-                                      //     password: passwordController.text);
-                                    }
-                                  },
-                                  onTap: () {},
-                                  textForUnValid: 'Enter you password',
-                                  controller: passwordController,
-                                  type: TextInputType.visiblePassword,
-                                  text: 'Password',
-                                  prefix: Icons.lock,
-                                  isPassword: cubit.isPassword,
-                                  suffix: cubit.isPassword
-                                      ? Icons.visibility_outlined
-                                      : Icons.visibility_off_outlined,
-                                  suffixFunction: () {
-                                    cubit.changePasswordShow();
-                                  }),
-                              SizedBox(
-                                height: 10,
-                              ),
-                              state is! LoginLoadingState
-                                  ? Container(
-                                      width: double.infinity,
-                                      height: 50,
-                                      child: ElevatedButton(
-                                          onPressed: () {
-                                            print('button taped');
-                                            if (formKey.currentState!
-                                                    .validate() ==
-                                                true) {
-                                              cubit.userLogin(
-                                                  email: emailController.text,
-                                                  password:
-                                                      passwordController.text);
-                                            } else {
-                                              print('else button');
-                                            }
-                                          },
-                                          child: Text("LOGIN")),
-                                    )
-                                  : Center(
-                                      child: Padding(
-                                      padding: const EdgeInsets.only(bottom: 5),
-                                      child: CircularProgressIndicator(
-                                        color: subColor,
-                                      ),
-                                    )),
-                              SizedBox(
-                                height: 10,
-                              ),
-                              Row(
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                children: [
-                                  Text(
-                                    'Don\'t have an account',
-                                    style: TextStyle(
-                                      fontWeight: FontWeight.w400,
-                                      fontSize: 12,
-                                      color: Colors.black87,
-                                    ),
-                                  ),
-                                  TextButton(
-                                    onPressed: () {
-                                      navigateTo(
-                                          context,
-                                          RegisterScreen(
-                                            afterLoginOrRegister: true,
-                                          ));
+                        child: Column(
+                          children: [
+                            defaultTextField(
+                                onSubmit: (value) {
+                                  print(value);
+                                },
+                                textForUnValid: 'Enter your username',
+                                controller: emailController,
+                                type: TextInputType.emailAddress,
+                                text: 'Email',
+                                prefix: Icons.alternate_email),
+                            defaultTextField(
+                                onSubmit: (value) {
+                                  if (formKey.currentState!.validate() ==
+                                      true) {
+                                    // cubit.userLogin(
+                                    //     email: emailController.text,
+                                    //     password: passwordController.text);
+                                  }
+                                },
+                                textForUnValid: 'Enter you password',
+                                controller: passwordController,
+                                type: TextInputType.visiblePassword,
+                                text: 'Password',
+                                prefix: Icons.lock,
+                                isPassword: cubit.isPassword,
+                                suffix: cubit.isPassword
+                                    ? Icons.visibility_outlined
+                                    : Icons.visibility_off_outlined,
+                                suffixFunction: () {
+                                  cubit.changePasswordShow();
+                                }),
+                            SizedBox(
+                              height: 10,
+                            ),
+                            state is! LoginLoadingState
+                                ? defaultButton(
+                                    function: () {
+                                      if (formKey.currentState!.validate() ==
+                                          true) {
+                                        cubit.userLogin(
+                                            email: emailController.text,
+                                            password: passwordController.text);
+                                      } else {}
                                     },
-                                    child: Text(
-                                      'Register now',
-                                      style: TextStyle(
-                                        fontSize: 15,
-                                        fontWeight: FontWeight.w600,
-                                      ),
+                                    text: 'login')
+                                : Center(
+                                    child: Padding(
+                                    padding: const EdgeInsets.only(bottom: 5),
+                                    child: CircularProgressIndicator(
+                                      color: subColor,
+                                    ),
+                                  )),
+                            SizedBox(
+                              height: 10,
+                            ),
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                Text(
+                                  'Don\'t have an account',
+                                  style: TextStyle(
+                                    fontWeight: FontWeight.w400,
+                                    fontSize: 12,
+                                    color: Colors.black87,
+                                  ),
+                                ),
+                                TextButton(
+                                  onPressed: () {
+                                    navigateTo(
+                                        context,
+                                        RegisterScreen(
+                                          afterLoginOrRegister: true,
+                                        ));
+                                  },
+                                  child: Text(
+                                    'Register now',
+                                    style: TextStyle(
+                                      fontSize: 15,
+                                      fontWeight: FontWeight.w600,
                                     ),
                                   ),
-                                ],
-                              ),
-                            ],
-                          ),
+                                ),
+                              ],
+                            ),
+                          ],
                         ),
                       ),
                     ],

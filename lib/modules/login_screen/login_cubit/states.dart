@@ -1,4 +1,3 @@
-import 'package:talib/models/user_model.dart';
 
 abstract class LoginStates {}
 

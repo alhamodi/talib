@@ -117,6 +117,8 @@ class GetCommentsSuccessState extends HomeStates {}
 
 class GetCommentsNumbersSuccessState extends HomeStates {}
 class GetCommentsNumbersErrorState extends HomeStates {}
+class GetLikesNumbersSuccessState extends HomeStates {}
+class GetLikesNumbersErrorState extends HomeStates {}
 
 
 class GetChatsSuccessState extends HomeStates {}

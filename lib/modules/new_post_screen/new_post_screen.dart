@@ -2,7 +2,6 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:flutter/widgets.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:talib/shared/components.dart';
 import 'package:talib/shared/colors.dart';
@@ -38,11 +37,11 @@ class _NewPostScreenState extends State<NewPostScreen> {
                 statusBarColor: Colors.transparent,
                 statusBarIconBrightness: Brightness.dark),
             elevation: 0,
-            backgroundColor: Colors.green.withOpacity(0.4),
+            backgroundColor: mainColor,
             leading: IconButton(
               icon: Icon(
                 Iconly_Broken.Arrow___Left_2,
-                color: subColor,
+                color: white,
               ),
               onPressed: () {
                 Navigator.pop(context);
@@ -52,9 +51,6 @@ class _NewPostScreenState extends State<NewPostScreen> {
               if (cubit.postImage != null || post != '')
                 TextButton(
                     onPressed: () {
-                      print('post');
-                      print(postController.text);
-
                       if (cubit.postImage != null) {
                         print('image existed');
                         cubit.uploadPostImage(
@@ -64,7 +60,7 @@ class _NewPostScreenState extends State<NewPostScreen> {
                         print('post only existed');
                         cubit.uploadPost(
                             body: postController.text,
-                            datetime: DateTime.now().toString());
+                            datetime: DateTime.now().toString(),);
                       }
                       showToast(
                           msg: 'Post Loading', state: ToastState.SUCCESS);
@@ -75,13 +71,13 @@ class _NewPostScreenState extends State<NewPostScreen> {
                     },
                     child: Text(
                       'Post',
-                      style: TextStyle(color: subColor),
-                    )),
+                      style: TextStyle(color: white),
+                    ),),
             ],
             title: Text(
               'Add post',
               style: TextStyle(
-                color: subColor,
+                color: white,
               ),
             ),
           ),
@@ -91,7 +87,7 @@ class _NewPostScreenState extends State<NewPostScreen> {
               children: [
                 if (state is PostImageUploadLoadingState)
                   LinearProgressIndicator(
-                    color: Colors.green,
+                    color: mainColor,
                   ),
                 Padding(
                   padding: const EdgeInsets.only(
@@ -181,14 +177,14 @@ class _NewPostScreenState extends State<NewPostScreen> {
           floatingActionButton: Padding(
             padding: const EdgeInsets.all(8.0),
             child: FloatingActionButton(
-              backgroundColor: Colors.white,
+              backgroundColor: mainColor,
               elevation: 15,
               onPressed: () {
                 cubit.getPostImage();
               },
               child: Icon(
                 Iconly_Broken.Image,
-                color: Colors.green.withOpacity(1),
+                color: white,
               ),
             ),
           ),

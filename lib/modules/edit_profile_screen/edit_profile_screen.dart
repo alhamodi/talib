@@ -1,12 +1,11 @@
 import 'dart:io';
 
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
-import 'package:flutter/widgets.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:talib/home/home/home_cubit.dart';
 import 'package:talib/home/home/home_state.dart';
 import 'package:talib/shared/colors.dart';
+import 'package:talib/shared/components.dart';
 import 'package:talib/shared/iconly-broken_icons.dart';
 
 class EditProfileScreen extends StatefulWidget {
@@ -15,9 +14,9 @@ class EditProfileScreen extends StatefulWidget {
 }
 
 class _EditProfileScreenState extends State<EditProfileScreen> {
-  var scaffoldKey = GlobalKey<ScaffoldState>();
   var formKey = GlobalKey<FormState>();
-  var bioController = TextEditingController();
+  TextEditingController bioController = TextEditingController();
+  TextEditingController nameController = TextEditingController();
 
   @override
   Widget build(BuildContext context) {
@@ -25,19 +24,19 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
       listener: (context, state) {},
       builder: (context, state) {
         HomeCubit cubit = HomeCubit.get(context);
+        nameController.text =
+            cubit.model?.name == null ? '' : cubit.model!.name!;
+        bioController.text = cubit.model?.bio == null ? '' : cubit.model!.bio!;
+
         return Scaffold(
-            key: scaffoldKey,
             appBar: AppBar(
               centerTitle: false,
-              systemOverlayStyle: SystemUiOverlayStyle(
-                  statusBarColor: Colors.transparent,
-                  statusBarIconBrightness: Brightness.dark),
               elevation: 0,
-              backgroundColor: Colors.green.withOpacity(0.4),
+              backgroundColor: mainColor,
               leading: IconButton(
                 icon: Icon(
                   Iconly_Broken.Arrow___Left_2,
-                  color: subColor,
+                  color: white,
                 ),
                 onPressed: () {
                   Navigator.pop(context);
@@ -46,276 +45,157 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
               actions: [
                 if (cubit.profileImage != null ||
                     cubit.coverImage != null ||
-                    cubit.newBio != '')
+                    nameController.text != '' ||
+                    nameController.text != cubit.model?.name ||
+                    bioController.text != '' ||
+                    bioController.text != cubit.model?.bio)
                   TextButton(
                       onPressed: () async {
-
-                          if (cubit.profileImage != null ||
-                              cubit.coverImage != null ||
-                              cubit.newBio != '') {
-                            if (cubit.profileImage != null) {
-                              await cubit.uploadProfileImage();
-                            }
-                            if (cubit.coverImage != null) {
-                              await cubit.uploadCoverImage();
-                            }
-
-                            await cubit.updateBio();
+                        if (cubit.profileImage != null ||
+                            cubit.coverImage != null ||
+                            nameController.text != '' ||
+                            nameController.text != cubit.model?.name ||
+                            bioController.text != '' ||
+                            bioController.text != cubit.model?.bio) {
+                          if (cubit.profileImage != null) {
+                            await cubit.uploadProfileImage();
                           }
+                          if (cubit.coverImage != null) {
+                            await cubit.uploadCoverImage();
+                          }
+                          if (formKey.currentState!.validate()) {
+                            await cubit.updateUser(
+                                name: nameController.text,
+                                bio: bioController.text);
+                          } else {}
+                        }
 
-                          cubit.coverImage = null;
-                          cubit.profileImage = null;
-                          cubit.newBio = '';
-                          Navigator.pop(context);
+                        cubit.coverImage = null;
+                        cubit.profileImage = null;
 
-
-
+                        Navigator.pop(context);
                       },
                       child: Text(
                         'Update',
-                        style: TextStyle(color: subColor),
+                        style: TextStyle(color: white),
                       )),
               ],
               title: Text(
                 'Edit Profile',
                 style: TextStyle(
-                  color: subColor,
+                  color: white,
                 ),
               ),
             ),
             body: cubit.model != null
                 ? SingleChildScrollView(
                     physics: BouncingScrollPhysics(),
-                    child: Column(
-                      children: [
-                        SizedBox(
-                          height: 5,
-                        ),
-                        Row(
-                          children: [
-                            Padding(
-                              padding: const EdgeInsets.only(left: 20),
-                              child: Align(
-                                  alignment: AlignmentDirectional.centerStart,
-                                  child: Text(
-                                    'Edit cover image',
-                                    style: TextStyle(
-                                        fontSize: 18, color: Colors.black54),
-                                  )),
-                            ),
-                            Spacer(),
-                            IconButton(
-                                onPressed: () {
-                                  cubit.getCoverImage();
-                                },
-                                icon: Icon(
-                                  Iconly_Broken.Edit,
-                                  color: Colors.green,
-                                ))
-                          ],
-                        ),
-                        Padding(
-                          padding: const EdgeInsets.all(6.0),
-                          child: Container(
-                            clipBehavior: Clip.antiAlias,
-                            decoration: BoxDecoration(
-                              gradient: LinearGradient(
-                                colors: [Colors.blue, Colors.green],
-                              ),
-                              borderRadius: BorderRadius.only(
-                                bottomRight: Radius.circular(25),
-                                bottomLeft: Radius.circular(25),
-                                topRight: Radius.circular(25),
-                                topLeft: Radius.circular(25),
-                              ),
-                            ),
-                            width: double.infinity,
-                            height: 235,
-                            child: cubit.coverImage == null
-                                ? Image(
-                                    image: NetworkImage(
-                                        '${cubit.model!.coverImage}'),
-                                    fit: BoxFit.cover,
-                                    height: 235,
-                                    width: double.infinity,
-                                  )
-                                : Image.file(
-                                    File(cubit.coverImage!.path),
-                                    fit: BoxFit.cover,
-                                  ),
-                          ),
-                        ),
-                        SizedBox(
-                          height: 5,
-                        ),
-                        Row(
-                          children: [
-                            Padding(
-                              padding: const EdgeInsets.only(left: 20),
-                              child: Align(
-                                  alignment: AlignmentDirectional.centerStart,
-                                  child: Text(
-                                    'Edit profile image',
-                                    style: TextStyle(
-                                        fontSize: 18, color: Colors.black54),
-                                  )),
-                            ),
-                            Spacer(),
-                            IconButton(
-                                onPressed: () {
-                                  cubit.getProfileImage();
-                                },
-                                icon: Icon(
-                                  Iconly_Broken.Edit,
-                                  color: Colors.green,
-                                ))
-                          ],
-                        ),
-                        SizedBox(
-                          height: 8,
-                        ),
-                        CircleAvatar(
-                          radius: 64,
-                          backgroundColor:
-                              Theme.of(context).scaffoldBackgroundColor,
-                          child: CircleAvatar(
-                              radius: 60,
-                              child: ClipOval(
-                                child: cubit.profileImage == null
-                                    ? Image(
-                                        image: NetworkImage(
-                                          '${cubit.model!.profileImage}',
-                                        ),
-                                        fit: BoxFit.cover,
-                                        height: 120,
-                                        width: 120,
-                                      )
-                                    : Image.file(
-                                        File(cubit.profileImage!.path),
-                                        width: 120,
-                                        height: 120,
-                                        fit: BoxFit.cover,
-                                      ),
-                                clipBehavior: Clip.hardEdge,
-                              )),
-                        ),
-                        SizedBox(
-                          height: 5,
-                        ),
-                        Row(
-                          children: [
-                            Padding(
-                              padding: const EdgeInsets.only(left: 20),
-                              child: Align(
-                                  alignment: AlignmentDirectional.centerStart,
-                                  child: Text(
-                                    'Edit bio',
-                                    style: TextStyle(
-                                        fontSize: 18, color: Colors.black54),
-                                  )),
-                            ),
-                            Spacer(),
-                            IconButton(
-                                onPressed: () {
-                                  bioController.text =
-                                      '${cubit.newBio == '' ? cubit.model!.bio : cubit.newBio}';
-                                  scaffoldKey.currentState!
-                                      .showBottomSheet((context) => Form(
-                                            key: formKey,
-                                            child: Container(
-                                              height: 90,
-                                              decoration: BoxDecoration(
-                                                  color: Colors.green.withOpacity(0.3),
-                                                  borderRadius:
-                                                      BorderRadius.only()),
-                                              child: Padding(
-                                                padding:
-                                                    const EdgeInsets.all(12.0),
-                                                child: TextFormField(
-                                                  maxLines: null,
-                                                  autofocus: true,
-                                                  keyboardType:
-                                                      TextInputType.text,
-                                                  enableInteractiveSelection:
-                                                      true,
-                                                  style: TextStyle(
-                                                    color: Colors.black,
-                                                    fontSize: 18,
-                                                  ),
-                                                  enableSuggestions: true,
-                                                  scrollPhysics:
-                                                      BouncingScrollPhysics(),
-                                                  decoration: InputDecoration(
-                                                    focusedBorder:
-                                                        InputBorder.none,
-                                                    disabledBorder:
-                                                        InputBorder.none,
-                                                    border: InputBorder.none,
-                                                    hintText: 'Edit your bio',
-                                                  ),
-                                                  autocorrect: true,
-                                                  controller: bioController,
-                                                  validator: (value) {
-                                                    if (value!.isEmpty) {
-                                                      return 'The bio can\'t be empty';
-                                                    }
-                                                    return null;
+                    child: Form(
+                      key: formKey,
+                      child: Column(
+                        children: [
+                          Container(
+                            height: 230,
+                            child: Stack(
+                              alignment: AlignmentDirectional.bottomCenter,
+                              children: [
+                                Align(
+                                    alignment: AlignmentDirectional.topStart,
+                                    child: Stack(
+                                      alignment: AlignmentDirectional.topEnd,
+                                      children: [
+                                        cubit.coverImage == null
+                                            ? cacheImage(
+                                                url:
+                                                    '${cubit.model!.coverImage}',
+                                                width: double.infinity,
+                                                height: 180,
+                                              )
+                                            : Container(
+                                                width: double.infinity,
+                                                height: 180,
+                                                child: Image.file(
+                                                  File(cubit.coverImage!.path),
+                                                  fit: BoxFit.cover,
+                                                ),
+                                              ),
+                                        Padding(
+                                          padding: const EdgeInsets.all(8.0),
+                                          child: CircleAvatar(
+                                              child: defaultIconButton(
+                                                  icon: Iconly_Broken.Image,
+                                                  function: () {
+                                                    cubit.getCoverImage();
                                                   },
-                                                  onFieldSubmitted: (value) {
-                                                    if (formKey.currentState!
-                                                        .validate()) {
-                                                      Navigator.of(context)
-                                                          .pop();
-                                                      cubit.newBio =
-                                                          bioController.text;
-                                                      bioController.text = '';
-                                                      setState(() {});
-                                                    }
-                                                  },
+                                                  color: white)),
+                                        )
+                                      ],
+                                    )),
+                                Stack(
+                                  alignment: AlignmentDirectional.bottomEnd,
+                                  children: [
+                                    CircleAvatar(
+                                      radius: 64,
+                                      backgroundColor: Theme.of(context)
+                                          .scaffoldBackgroundColor,
+                                      child: cubit.profileImage == null
+                                          ? cacheImage(
+                                              url:
+                                                  '${cubit.model!.profileImage}',
+                                              width: 120,
+                                              height: 120,
+                                              shape: BoxShape.circle)
+                                          : CircleAvatar(
+                                              radius: 60,
+                                              child: ClipOval(
+                                                child: Image.file(
+                                                  File(
+                                                      cubit.profileImage!.path),
+                                                  width: 120,
+                                                  height: 120,
+                                                  fit: BoxFit.cover,
                                                 ),
                                               ),
                                             ),
-                                          ));
-                                },
-                                icon: Icon(
-                                  Iconly_Broken.Edit,
-                                  color: Colors.green,
-                                ))
-                          ],
-                        ),
-                        SizedBox(
-                          height: 10,
-                        ),
-                        Padding(
-                          padding: const EdgeInsets.all(8.0),
-                          child: Container(
-                            width: double.infinity,
-                            decoration: BoxDecoration(
-                                color: Colors.green.withOpacity(0.1),
-                                borderRadius: BorderRadius.circular(20)),
-                            child: Padding(
-                              padding: const EdgeInsets.only(
-                                  right: 15, left: 15, top: 10, bottom: 10),
-                              child: Text(
-                                '${cubit.newBio == '' ? cubit.model!.bio : cubit.newBio}',
-                                style: TextStyle(
-                                    fontWeight: FontWeight.w500,
-                                    color: subColor,
-                                    fontSize: 13),
-                                textAlign: TextAlign.center,
-                              ),
+                                    ),
+                                    CircleAvatar(
+                                        child: defaultIconButton(
+                                            icon: Iconly_Broken.Image,
+                                            function: () {
+                                              cubit.getProfileImage();
+                                            },
+                                            color: white))
+                                  ],
+                                ),
+                              ],
                             ),
                           ),
-                        ),
-                        SizedBox(
-                          height: 30,
-                        ),
-                      ],
+                          SizedBox(
+                            height: 20,
+                          ),
+                          defaultTextField(
+                            horizontalPadding: 8,
+                            controller: nameController,
+                            type: TextInputType.name,
+                            text: "Name",
+                            textForUnValid: "name must not be empty",
+                            prefix: Iconly_Broken.User,
+                          ),
+                          defaultTextField(
+                            horizontalPadding: 8,
+                            controller: bioController,
+                            type: TextInputType.text,
+                            text: "Bio",
+                            textForUnValid: "bio must not be empty",
+                            prefix: Iconly_Broken.Graph,
+                          ),
+                        ],
+                      ),
                     ),
                   )
                 : Center(
                     child: CircularProgressIndicator(
-                    color: Colors.green,
+                    color: mainColor,
                   )));
       },
     );

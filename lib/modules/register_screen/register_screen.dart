@@ -2,7 +2,6 @@ import 'package:talib/home/home/home_view.dart';
 import 'package:talib/shared/cacheHelper.dart';
 import 'package:talib/shared/colors.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:talib/modules/login_screen/login_screen.dart';
 import 'package:talib/modules/register_screen/register_cubit/cubit.dart';
@@ -78,18 +77,15 @@ class RegisterScreen extends StatelessWidget {
                               onSubmit: (value) {
                                 print(value);
                               },
-                              onTap: () {},
                               textForUnValid: 'Enter your name',
                               controller: nameControl,
                               type: TextInputType.name,
                               text: 'Name',
                               prefix: Icons.person),
-
                           defaultTextField(
                               onSubmit: (value) {
                                 print(value);
                               },
-                              onTap: () {},
                               textForUnValid: 'Enter your email',
                               controller: emailController,
                               type: TextInputType.emailAddress,
@@ -97,10 +93,8 @@ class RegisterScreen extends StatelessWidget {
                               prefix: Icons.alternate_email),
                           defaultTextField(
                               onSubmit: (value) {
-                                if (formKey.currentState!.validate() ==
-                                    true) {}
+                                if (formKey.currentState!.validate() == true) {}
                               },
-                              onTap: () {},
                               textForUnValid: 'Enter you password',
                               controller: passwordController,
                               type: TextInputType.visiblePassword,
@@ -117,27 +111,18 @@ class RegisterScreen extends StatelessWidget {
                             height: 10,
                           ),
                           state is! RegisterLoadingState
-                              ? Container(
-                                  width: double.infinity,
-                                  height: 50,
-                                  child: ElevatedButton(
-                                      onPressed: () {
-                                        print('button taped');
-                                        if (formKey.currentState!
-                                                .validate() ==
-                                            true) {
-                                          cubit.userRegister(
-                                            name: nameControl.text,
-                                            email: emailController.text,
-                                            password:
-                                                passwordController.text,
-                                          );
-                                        } else {
-                                          print('else button');
-                                        }
-                                      },
-                                      child: Text("SIGN UP")),
-                                )
+                              ? defaultButton(
+                                  function: () {
+                                    if (formKey.currentState!.validate() ==
+                                        true) {
+                                      cubit.userRegister(
+                                        name: nameControl.text,
+                                        email: emailController.text,
+                                        password: passwordController.text,
+                                      );
+                                    } else {}
+                                  },
+                                  text: 'sign up')
                               : Center(
                                   child: Padding(
                                   padding: const EdgeInsets.only(bottom: 5),
@@ -163,9 +148,9 @@ class RegisterScreen extends StatelessWidget {
                                 child: Text(
                                   'Login',
                                   style: TextStyle(
-                                      fontSize: 15,
-                                      fontWeight: FontWeight.w700,
-                                      ),
+                                    fontSize: 15,
+                                    fontWeight: FontWeight.w700,
+                                  ),
                                 ),
                               ),
                             ],

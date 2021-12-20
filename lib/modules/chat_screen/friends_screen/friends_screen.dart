@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:talib/modules/chat_screen/person_chat_screen/person_chat_screen.dart';
+import 'package:talib/shared/colors.dart';
 import 'package:talib/shared/components.dart';
 import 'package:talib/home/home/home_cubit.dart';
 import 'package:talib/home/home/home_state.dart';
@@ -41,7 +42,7 @@ class FriendsScreen extends StatelessWidget {
               )
             : Center(
                 child: CircularProgressIndicator(
-                color: Colors.green,
+                color: mainColor,
               ));
       },
     );

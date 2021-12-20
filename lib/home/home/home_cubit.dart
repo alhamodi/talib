@@ -1,8 +1,7 @@
 import 'dart:io';
 
-import 'package:bloc/bloc.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_storage/firebase_storage.dart'as firebase_storage;
+import 'package:firebase_storage/firebase_storage.dart' as firebase_storage;
 import 'package:flutter/cupertino.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:image_picker/image_picker.dart';
@@ -21,20 +20,30 @@ import 'package:talib/shared/components.dart';
 class HomeCubit extends Cubit<HomeStates> {
   HomeCubit() : super(InitialHomeState());
 
- static HomeCubit get(context) => BlocProvider.of(context);
+  static HomeCubit get(context) => BlocProvider.of(context);
 
- int currentIndex = 0;
+  int currentIndex = 0;
 
-  List<String> headlines =['Talib','Notifications','Chats'];
+  List<String> headlines = ['Talib', 'Notifications', 'Chats'];
 
   List<Widget> navItem = [FeedsScreen(), NotificationScreen(), FriendsScreen()];
 
-  PageController pageController=PageController();
+  PageController pageController = PageController();
 
   void changeBottomNav(int index) {
+    if (index == 0) {
+      getUserData();
+      getAllUsers();
+      getPosts();
+      getMyPosts();
+    }
+    if (index == 2) {
+      getAllUsers();
+    }
     currentIndex = index;
     emit(changeBottomNavState());
   }
+
   /* get user data from fireStore */
   UserModel? model;
 
@@ -107,7 +116,7 @@ class HomeCubit extends Cubit<HomeStates> {
         .then((value) {
       value.ref.getDownloadURL().then((value) {
         emit(ProfileImageUploadSuccessState());
-        print(value);
+
         profileImageUrl = value;
         // update profile image
         updateProfileImage();
@@ -145,8 +154,6 @@ class HomeCubit extends Cubit<HomeStates> {
     });
   }
 
-  String newBio = '';
-
   Future<void> updateProfileImage() async {
     if (profileImageUrl != '') {
       await FirebaseFirestore.instance
@@ -173,48 +180,30 @@ class HomeCubit extends Cubit<HomeStates> {
     }
   }
 
-  Future<void> updateBio() async {
-    if (newBio != '') {
-      await FirebaseFirestore.instance
-          .collection('users')
-          .doc(model!.uid)
-          .update({'bio': newBio}).then((value) {
-        emit(BioUpdateSuccessState());
-      }).catchError((error) {
-        emit(BioUpdateErrorState());
-      });
-    }
-  }
+  Future<void> updateUser({
+    required String name,
+    required String bio,
+  }) async {
+    UserModel newmodel = UserModel(
+        name: name,
+        bio: bio,
+        coverImage: model?.coverImage,
+        email: model?.email,
+        uid: model?.uid,
+        isEmailVerified: model?.isEmailVerified,
+        profileImage:  model?.profileImage,);
 
-  /* trying to handling uploading and updating ,
-  i noticed that getUserData finished before updated */
-  ////////////////////////////////////////////////////////
-  // Future<void> uploadUserData()async
-  // {
-  //   if (profileImage != null) {
-  //     await uploadProfileImage();
-  //   }
-  //   if (coverImage != null) {
-  //     await uploadCoverImage();
-  //   }
-  // }
-  //
-  // Future <void> updateUserData()async
-  // {
-  //   await updateProfileImage();
-  //   await updateCoverImage();
-  //   await updateBio();
-  // }
-  //
-  // void uploadAndUpdate()
-  // {
-  //   uploadUserData().then((value) {
-  //     updateUserData().then((value) {
-  //       getUserData();
-  //     });
-  //   });
-  // }
-  ////////////////////////////////////////////////////////
+    await FirebaseFirestore.instance
+        .collection('users')
+        .doc(model?.uid)
+        .update(newmodel.toMap())
+        .then((value) {
+      getUserData();
+      emit(BioUpdateSuccessState());
+    }).catchError((error) {
+      emit(BioUpdateErrorState());
+    });
+  }
 
   // Post configurations
   File? postImage;
@@ -242,7 +231,6 @@ class HomeCubit extends Cubit<HomeStates> {
         .then((value) {
       value.ref.getDownloadURL().then((value) {
         emit(PostImageUploadSuccessState());
-        print(value);
         uploadPost(body: body, datetime: datetime, postImage: value);
       }).catchError((error) {
         emit(PostImageUploadErrorState());
@@ -291,80 +279,68 @@ class HomeCubit extends Cubit<HomeStates> {
   int counter = 0;
 
   List<int> commentsNumber = [];
+
   void getPosts() {
     FirebaseFirestore.instance
         .collection('posts')
         .orderBy('datetime')
         .snapshots()
-        .listen((event) {
-      posts = [];
-      likes = [];
-      postsId = [];
-      likedByMe = [];
-      counter = 0;
-      commentsNumber = [];
-      emit(GetPostSuccessState());
-      event.docs.forEach((element) {
-        element.reference.collection('likes').get().then((value) {
-          emit(GetPostSuccessState());
-          likes.add(value.docs.length);
-          postsId.add(element.id);
-          posts.add(PostModel.fromJson(element.data()));
-          value.docs.forEach((element) {
-            if (element.id == model!.uid) {
-              counter++;
-            }
-          });
-          if (counter > 0) {
-            likedByMe.add(true);
-          } else {
-            likedByMe.add(false);
-          }
-          counter = 0;
-        }).catchError((error) {
-          emit(GetPostErrorState());
-        });
+        .listen(
+      (event) {
+        posts = [];
+        likes = [];
+        postsId = [];
+        likedByMe = [];
+        counter = 0;
+        commentsNumber = [];
+        event.docs.forEach(
+          (element) {
+            element.reference.collection('likes').get().then((value) {
+              likes.add(value.docs.length);
+              postsId.add(element.id);
+              posts.add(PostModel.fromJson(element.data()));
+              value.docs.forEach((element) {
+                if (element.id == model!.uid) {
+                  counter++;
+                }
+              });
+              if (counter > 0) {
+                likedByMe.add(true);
+              } else {
+                likedByMe.add(false);
+              }
+              counter = 0;
+              emit(
+                GetLikesNumbersSuccessState(),
+              );
+            }).catchError((error) {
+              emit(
+                GetLikesNumbersErrorState(),
+              );
+            });
 
-        element.reference.collection('comments').get().then((value) {
-          commentsNumber.add(value.docs.length);
-        }).catchError((error) {});
-      });
-    });
+            element.reference.collection('comments').get().then(
+              (value) {
+                commentsNumber.add(value.docs.length);
+                emit(
+                  GetCommentsNumbersSuccessState(),
+                );
+              },
+            ).catchError(
+              (error) {
+                emit(
+                  GetCommentsNumbersErrorState(),
+                );
+              },
+            );
+            emit(
+              GetPostSuccessState(),
+            );
+          },
+        );
+      },
+    );
   }
-
-  // List<int> commentsNumber = [];
-
-  // trying to get comments number
-  // void getCommentsNumber()
-  // {
-  //   commentsNumber= [];
-  //   postsId.forEach((element) {
-  //     FirebaseFirestore.instance
-  //         .collection('posts')
-  //         .doc(element).collection('comments').get().then((value) {
-  //           emit(GetCommentsNumbersSuccessState());
-  //           commentsNumber.add(value.docs.length);
-  //     }).catchError((error){
-  //       emit(GetCommentsNumbersErrorState());
-  //     });
-  //   });
-  //
-  // }
-
-  // trying to get the updated profile pic instead of the old one when the user post
-  // String? getImageFromUid (String? uid)
-  // {
-  //   FirebaseFirestore.instance.collection('users').doc(uid).get().then((value){
-  //     UserModel demoUserModel = UserModel.fromJson(value.data());
-  //     emit(GetProfileImageFromUidSuccessState());
-  //     return demoUserModel.profileImage;
-  //
-  //
-  //   }).catchError((error){
-  //     emit(GetProfileImageFromUidErrorState());
-  //     print(error.toString());
-  //   });
-  // }
 
   void likePost(String postId) {
     FirebaseFirestore.instance
@@ -447,6 +423,7 @@ class HomeCubit extends Cubit<HomeStates> {
   }
 
   List<MessageModel> messages = [];
+
   void getMessages({
     required String? receiverId,
   }) {
@@ -527,8 +504,8 @@ class HomeCubit extends Cubit<HomeStates> {
   List<int> personComments = [];
   List<String> personImages = [];
   List<String> personTexts = [];
-  List<bool> personIsLikedByMe =[];
-  int personPostCounter =0;
+  List<bool> personIsLikedByMe = [];
+  int personPostCounter = 0;
 
   void getPersonPosts({required String? personUid}) {
     FirebaseFirestore.instance
@@ -542,8 +519,8 @@ class HomeCubit extends Cubit<HomeStates> {
       personComments = [];
       personImages = [];
       personTexts = [];
-      personIsLikedByMe =[];
-      personPostCounter =0;
+      personIsLikedByMe = [];
+      personPostCounter = 0;
       emit(GetPersonPostSuccessState());
       event.docs.forEach((element) {
         if (element.data()['uid'] == personUid) {
@@ -567,7 +544,6 @@ class HomeCubit extends Cubit<HomeStates> {
               personIsLikedByMe.add(false);
             }
             personPostCounter = 0;
-
           }).catchError((error) {
             emit(GetPersonPostErrorState());
           });
@@ -598,25 +574,6 @@ class HomeCubit extends Cubit<HomeStates> {
     });
   }
 
-  // trying to check is liked or not but it called over
-  // bool? isLiked(String? postId) {
-  //   FirebaseFirestore.instance
-  //       .collection('posts')
-  //       .doc(postId)
-  //       .collection('likes')
-  //       .doc(model!.uid)
-  //       .get().then((value) {
-  //     emit(GetLikeSuccessState());
-  //     LikeModel like = LikeModel.fromJson(value.data());
-  //     print(value.data());
-  //     return like.like;
-  //
-  //   }).catchError((error) {
-  //     emit(GetLikeErrorState());
-  //     print(error.toString());
-  //   });
-  // }
-
   void sendComment({
     required String? dateTime,
     required String? text,
@@ -643,6 +600,7 @@ class HomeCubit extends Cubit<HomeStates> {
   }
 
   List<CommentModel> comments = [];
+
   void getComments({
     required String? postUid,
   }) {
@@ -663,6 +621,7 @@ class HomeCubit extends Cubit<HomeStates> {
 
   UserModel? userForRecentMessage;
   List<RecentMessageModel> recentMessages = [];
+
   void getRecentMessages() {
     FirebaseFirestore.instance
         .collection('users')
@@ -709,11 +668,9 @@ class HomeCubit extends Cubit<HomeStates> {
     }
   }
 
-  void notificationSeen()
-  {
-
-  }
+  void notificationSeen() {}
   List<NotificationModel> myNotifications = [];
+
   void getNotifications() {
     FirebaseFirestore.instance
         .collection('users')
@@ -768,10 +725,10 @@ class HomeCubit extends Cubit<HomeStates> {
 
   void setRecentMessage(
       {required String? receiverId,
-        required String? dateTimeOfLastMessage,
-        required String? lastMessage,
-        required String? receiverName,
-        required String? receiverProfilePic}) {
+      required String? dateTimeOfLastMessage,
+      required String? lastMessage,
+      required String? receiverName,
+      required String? receiverProfilePic}) {
     RecentMessageModel recentMessage = RecentMessageModel(
       senderId: model!.uid,
       dateTimeOfLastMessage: dateTimeOfLastMessage,
@@ -810,27 +767,40 @@ class HomeCubit extends Cubit<HomeStates> {
     });
   }
 
-
-  void deletePost(String? postId){
-    FirebaseFirestore.instance.collection('posts').doc(postId).delete().then((value) {
+  void deletePost(String? postId) {
+    FirebaseFirestore.instance
+        .collection('posts')
+        .doc(postId)
+        .delete()
+        .then((value) {
       emit(DeletePostSuccessState());
-    }).catchError((error){
+    }).catchError((error) {
       print('error delete post');
     });
-
   }
 
-  void deleteChat(String? personId){
-    FirebaseFirestore.instance.collection('users').doc(uid).collection('chats').doc(personId).delete().then((value) {
+  void deleteChat(String? personId) {
+    FirebaseFirestore.instance
+        .collection('users')
+        .doc(uid)
+        .collection('chats')
+        .doc(personId)
+        .delete()
+        .then((value) {
       emit(DeleteChatSuccessState());
-    }).catchError((error){
+    }).catchError((error) {
       print(error.toString());
     });
-    FirebaseFirestore.instance.collection('users').doc(uid).collection('recentMessages').doc(personId).delete().then((value) {
+    FirebaseFirestore.instance
+        .collection('users')
+        .doc(uid)
+        .collection('recentMessages')
+        .doc(personId)
+        .delete()
+        .then((value) {
       emit(DeleteChatSuccessState());
-    }).catchError((error){
+    }).catchError((error) {
       print(error.toString());
     });
-
   }
 }

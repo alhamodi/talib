@@ -57,7 +57,6 @@ class MyApp extends StatelessWidget {
         BlocProvider(
             create: (context) => HomeCubit()
               ..getUserData()
-              ..getAllUsers()
               ..getPosts()
               ..getMyPosts()
               ..getNotifications()

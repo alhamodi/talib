@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_conditional_rendering/conditional.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
-import 'package:talib/modules/chat_screen/recent_messages_screen/recent_messages_screen.dart';
+// import 'package:talib/modules/chat_screen/recent_messages_screen/recent_messages_screen.dart';
 import 'package:talib/modules/new_post_screen/new_post_screen.dart';
 import 'package:talib/shared/colors.dart';
 import 'package:talib/shared/components.dart';
@@ -29,7 +29,7 @@ class _FeedsScreenState extends State<FeedsScreen> {
 
           return Conditional.single(
             context: context,
-            conditionBuilder: (BuildContext context) => cubit.posts.length >= 0,
+            conditionBuilder: (BuildContext context) => cubit.posts.length >= 0&&cubit.model!=null,
             widgetBuilder: (BuildContext context) => Scaffold(
               backgroundColor: grey100,
               body: SingleChildScrollView(
@@ -45,7 +45,7 @@ class _FeedsScreenState extends State<FeedsScreen> {
                       height: 150,
                       width: double.infinity,
                     ),
-                RecentMessagesScreen(),
+                // RecentMessagesScreen(),
                     SizedBox(
                       height: 20,
                     ),
@@ -53,7 +53,7 @@ class _FeedsScreenState extends State<FeedsScreen> {
                         physics: NeverScrollableScrollPhysics(),
                         shrinkWrap: true,
                         itemBuilder: (context, index) => singlePostBuilder(
-                            cubit.posts[index], context, index),
+                            cubit.posts[index], context, index, false),
                         separatorBuilder: (context, index) => SizedBox(
                               height: 10,
                             ),
@@ -64,12 +64,7 @@ class _FeedsScreenState extends State<FeedsScreen> {
                   ],
                 ),
               ),
-              floatingActionButton: FloatingActionButton(
-                onPressed: () {
-                  navigateTo(context, NewPostScreen());
-                },
-                child: Icon(Iconly_Broken.Edit),
-              ),
+              floatingActionButton: addPost(context)
             ),
             fallbackBuilder: (BuildContext context) => Center(
                 child: CircularProgressIndicator(
@@ -78,4 +73,6 @@ class _FeedsScreenState extends State<FeedsScreen> {
           );
         });
   }
+
+
 }

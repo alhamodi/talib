@@ -1,4 +1,3 @@
-import 'package:bloc/bloc.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:talib/models/user_model.dart';
@@ -53,7 +52,7 @@ class RegisterCubit extends Cubit<RegisterStates> {
       profileImage: 'https://firebasestorage.googleapis.com/v0/b/social-app-3e9b6.appspot.com/o/default%20images%2Fundraw_male_avatar_323b.png?alt=media&token=44295a5e-8c15-4159-a818-1bd3b6192ac1',
       coverImage:
           'https://firebasestorage.googleapis.com/v0/b/social-app-3e9b6.appspot.com/o/default%20images%2Fundraw_conversation_h12g.png?alt=media&token=9f1bc126-81ed-4239-92b3-4595c0e44f8e',
-      bio: 'SAWA User',
+      bio: 'your bio ...',
     );
     // emit(UserCreateLoadingState());
     FirebaseFirestore.instance

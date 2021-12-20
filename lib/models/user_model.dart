@@ -8,13 +8,13 @@ class UserModel {
   String? bio;
 
   UserModel(
-      {required this.name,
-      required this.email,
-      required this.uid,
-      required this.isEmailVerified,
-      required this.profileImage,
-      required this.coverImage,
-      required this.bio,
+      { this.name,
+       this.email,
+       this.uid,
+       this.isEmailVerified,
+       this.profileImage,
+       this.coverImage,
+       this.bio,
       });
 
   UserModel.fromJson(Map<String, dynamic>? json) {

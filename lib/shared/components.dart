@@ -4,6 +4,7 @@ import 'package:talib/home/home/home_cubit.dart';
 import 'package:talib/models/post_model.dart';
 import 'package:talib/modules/comments_screen/comments_screen.dart';
 import 'package:talib/modules/image_view_screen/image_view_screen.dart';
+import 'package:talib/modules/new_post_screen/new_post_screen.dart';
 import 'package:talib/modules/person_profile/person_profile.dart';
 import 'package:talib/modules/profile/profile.dart';
 import 'package:talib/shared/cacheHelper.dart';
@@ -27,29 +28,32 @@ navigateTo(BuildContext context, Widget widget) {
   return Navigator.push(
       context, MaterialPageRoute(builder: (context) => widget));
 }
+
 String? uid;
 
 Widget defaultButton({
   double width = double.infinity,
-  Color color = Colors.blue,
+  Color? color,
+  double? fontSize = 17,
   required Function function,
   required String text,
 }) =>
     Container(
       width: width,
+      height: 45,
       child: Padding(
         padding: const EdgeInsets.symmetric(
           horizontal: 0,
         ),
         child: MaterialButton(
-          color: color,
+          color: color ?? mainColor,
           onPressed: () {
             function();
           },
           child: Text(
             text.toUpperCase(),
             style: TextStyle(
-              fontSize: 17,
+              fontSize: fontSize,
               fontWeight: FontWeight.w400,
               color: Colors.white,
             ),
@@ -63,7 +67,8 @@ Widget defaultTextField({
   bool isPassword = false,
   required TextInputType type,
   Function? onSubmit,
-  Function? onTap,
+  double horizontalPadding = 0,
+  double verticalPadding = 0,
   required String text,
   required IconData prefix,
   IconData? suffix,
@@ -72,15 +77,14 @@ Widget defaultTextField({
   //required Function validate,
 }) =>
     Container(
+      padding: EdgeInsets.symmetric(
+          horizontal: horizontalPadding, vertical: verticalPadding),
       height: 80,
       decoration: BoxDecoration(),
       child: TextFormField(
         enableSuggestions: true,
         autocorrect: true,
         controller: controller,
-        onTap: () {
-          onTap!();
-        },
         validator: (value) {
           if (value!.isEmpty) {
             return textForUnValid;
@@ -94,24 +98,23 @@ Widget defaultTextField({
         obscureText: isPassword ? true : false,
         keyboardType: TextInputType.visiblePassword,
         decoration: InputDecoration(
-          labelText: text,
-          prefixIcon: Icon(prefix),
-          suffixIcon: IconButton(
-            onPressed: () {
-              suffixFunction!();
-            },
-            icon: Icon(suffix),
-          ),
-        ),
+            labelText: text,
+            prefixIcon: Icon(prefix),
+            suffixIcon: IconButton(
+              onPressed: () {
+                suffixFunction!();
+              },
+              icon: Icon(suffix),
+            ),
+            border: OutlineInputBorder()),
       ),
     );
-
 
 void navigateAndFinish(context, widget) {
   Navigator.pushAndRemoveUntil(
       context,
       MaterialPageRoute(builder: (context) => widget),
-          (Route<dynamic> route) => false);
+      (Route<dynamic> route) => false);
 }
 
 void showToast({
@@ -153,7 +156,7 @@ Color chooseToastColor(ToastState state) {
 }
 
 void logOut(context) {
-  CacheHelper.removeData( 'uid');
+  CacheHelper.removeData('uid');
   HomeCubit.get(context).model = null;
   uid = '';
   HomeCubit.get(context).users = [];
@@ -169,7 +172,8 @@ void printFullText(String text) {
 }
 
 // post builder
-Widget singlePostBuilder(PostModel post, context, index) {
+Widget singlePostBuilder(
+    PostModel post, BuildContext context, int index, bool? myPost) {
   return Card(
     clipBehavior: Clip.antiAlias,
     child: Column(
@@ -181,8 +185,7 @@ Widget singlePostBuilder(PostModel post, context, index) {
               navigateTo(context, ProfileScreen());
             } else {
               HomeCubit.get(context).getAllPersonUsers(personUid: post.uid);
-              HomeCubit.get(context)
-                  .getAnotherPersonData(personUid: post.uid);
+              HomeCubit.get(context).getAnotherPersonData(personUid: post.uid);
               HomeCubit.get(context).getPersonPosts(personUid: post.uid);
               navigateTo(
                   context,
@@ -192,7 +195,7 @@ Widget singlePostBuilder(PostModel post, context, index) {
             }
           },
           child: Padding(
-            padding: const EdgeInsets.only(left: 12.0,top: 12),
+            padding: const EdgeInsets.only(left: 12.0, top: 12),
             child: Row(
               crossAxisAlignment: CrossAxisAlignment.center,
               children: [
@@ -204,33 +207,46 @@ Widget singlePostBuilder(PostModel post, context, index) {
                 SizedBox(
                   width: 10,
                 ),
-                Expanded(
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.start,
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        '${post.name}',
-                        textAlign: TextAlign.start,
-                        maxLines: 1,
-                        overflow: TextOverflow.ellipsis,
-                        style: TextStyle(
-                            fontSize: 18,
-                            color: mainColor,
-                            fontWeight: FontWeight.w600),
-                      ),
-                      Text(
-                        '${post.datetime!.substring(0, 16)}',
-                        maxLines: 1,
-                        overflow: TextOverflow.ellipsis,
-                        style: TextStyle(
-                            fontSize: 9,
-                            color: mainColor,
-                            fontWeight: FontWeight.w500),
-                      ),
-                    ],
-                  ),
+                Column(
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      '${post.name}',
+                      textAlign: TextAlign.start,
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                      style: TextStyle(
+                          fontSize: 18,
+                          color: mainColor,
+                          fontWeight: FontWeight.w600),
+                    ),
+                    Text(
+                      '${post.datetime!.substring(0, 16)}',
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                      style: TextStyle(
+                          fontSize: 9,
+                          color: mainColor,
+                          fontWeight: FontWeight.w500),
+                    ),
+                  ],
                 ),
+                myPost == true
+                    ? Spacer()
+                    : SizedBox(
+                        height: 0,
+                      ),
+                myPost == true
+                    ? defaultIconButton(
+                        icon: Iconly_Broken.Delete,
+                        function: () {
+                          HomeCubit.get(context).deletePost(
+                              HomeCubit.get(context).myPostsId[index]);
+                        })
+                    : SizedBox(
+                        height: 0,
+                      ),
               ],
             ),
           ),
@@ -241,14 +257,14 @@ Widget singlePostBuilder(PostModel post, context, index) {
         if (post.body != '')
           Padding(
               padding:
-              const EdgeInsets.only(left: 12, right: 12, bottom: 8, top: 8),
+                  const EdgeInsets.only(left: 12, right: 12, bottom: 8, top: 8),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
                     '${post.body}',
                     style:
-                    TextStyle(fontWeight: FontWeight.w500, fontSize: 15.5),
+                        TextStyle(fontWeight: FontWeight.w500, fontSize: 15.5),
                   ),
                 ],
               )),
@@ -267,7 +283,8 @@ Widget singlePostBuilder(PostModel post, context, index) {
               width: double.infinity,
               clipBehavior: Clip.antiAlias,
               decoration: BoxDecoration(),
-              child: cacheImage(url:'${post.postImage}',
+              child: cacheImage(
+                  url: '${post.postImage}',
                   width: double.infinity,
                   height: 200,
                   shape: BoxShape.rectangle),
@@ -290,19 +307,25 @@ Widget singlePostBuilder(PostModel post, context, index) {
                 ],
               ),
               Spacer(),
-              Row(
-                children: [
-                  // Text('${HomeCubit.get(context).commentsNumber[index]} comments'),
-                  InkWell(
-                      onTap: () {
-                        navigateTo(
-                            context,
-                            CommentsScreen(
-                                HomeCubit.get(context).postsId[index],
-                                post.uid));
-                      },
-                      child: Text('Comments')),
-                ],
+              InkWell(
+                onTap: () {
+                  navigateTo(
+                      context,
+                      CommentsScreen(
+                          HomeCubit.get(context).postsId[index], post.uid));
+                },
+                child: Row(
+                  children: [
+                    Icon(
+                      Iconly_Broken.Chat,
+                      color: Colors.amber,
+                    ),
+                    SizedBox(
+                      width: 5,
+                    ),
+                    Text('${HomeCubit.get(context).commentsNumber[index]}'),
+                  ],
+                ),
               ),
             ],
           ),
@@ -319,12 +342,11 @@ Widget singlePostBuilder(PostModel post, context, index) {
             child: Row(
               crossAxisAlignment: CrossAxisAlignment.center,
               children: [
-                CircleAvatar(
-                  radius: 23,
-                  backgroundImage: NetworkImage(
-                    '${HomeCubit.get(context).model!.profileImage}',
-                  ),
-                ),
+                cacheImage(
+                    url: '${HomeCubit.get(context).model!.profileImage}',
+                    width: 50,
+                    height: 50,
+                    shape: BoxShape.circle),
                 SizedBox(
                   width: 15,
                 ),
@@ -360,8 +382,8 @@ Widget singlePostBuilder(PostModel post, context, index) {
                 IconButton(
                     onPressed: () {
                       if (HomeCubit.get(context).likedByMe[index] == true) {
-                        HomeCubit.get(context).disLikePost(
-                            HomeCubit.get(context).postsId[index]);
+                        HomeCubit.get(context)
+                            .disLikePost(HomeCubit.get(context).postsId[index]);
                         HomeCubit.get(context).likedByMe[index] = false;
                         HomeCubit.get(context).likes[index]--;
                       } else {
@@ -373,7 +395,7 @@ Widget singlePostBuilder(PostModel post, context, index) {
                         HomeCubit.get(context).sendNotifications(
                             action: 'LIKE',
                             targetPostUid:
-                            HomeCubit.get(context).postsId[index],
+                                HomeCubit.get(context).postsId[index],
                             receiverUid: post.uid,
                             dateTime: DateTime.now().toString());
                       }
@@ -426,12 +448,11 @@ Widget singleMyPostBuilder(PostModel post, context, index) {
             child: Row(
               crossAxisAlignment: CrossAxisAlignment.center,
               children: [
-                CircleAvatar(
-                  radius: 23,
-                  backgroundImage: NetworkImage(
-                    '${post.profileImage}',
-                  ),
-                ),
+                cacheImage(
+                    url: '${post.profileImage}',
+                    width: 50,
+                    height: 50,
+                    shape: BoxShape.circle),
                 SizedBox(
                   width: 10,
                 ),
@@ -447,7 +468,7 @@ Widget singleMyPostBuilder(PostModel post, context, index) {
                         overflow: TextOverflow.ellipsis,
                         style: TextStyle(
                             fontSize: 18,
-                            color: subColor,
+                            color: mainColor,
                             fontWeight: FontWeight.w600),
                       ),
                       Text(
@@ -543,7 +564,7 @@ Widget singleMyPostBuilder(PostModel post, context, index) {
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
                   cacheImage(
-                      url: "${HomeCubit.get(context).profileImage}",
+                      url: "${HomeCubit.get(context).model!.profileImage}",
                       width: 30,
                       height: 30,
                       shape: BoxShape.circle),
@@ -578,11 +599,11 @@ Widget singleMyPostBuilder(PostModel post, context, index) {
                       ],
                     ),
                   ),
-                  IconButton(onPressed: () {}, icon: Icon(Iconly_Broken.Upload)),
+                  IconButton(
+                      onPressed: () {}, icon: Icon(Iconly_Broken.Upload)),
                   IconButton(
                       onPressed: () {
-                        if (HomeCubit.get(context).myLikedByMe[index] ==
-                            true) {
+                        if (HomeCubit.get(context).myLikedByMe[index] == true) {
                           HomeCubit.get(context).disLikePost(
                               HomeCubit.get(context).myPostsId[index]);
                           HomeCubit.get(context).myLikedByMe[index] = false;
@@ -596,8 +617,7 @@ Widget singleMyPostBuilder(PostModel post, context, index) {
                       },
                       icon: Icon(
                         Iconly_Broken.Heart,
-                        color:
-                        HomeCubit.get(context).myLikedByMe[index] == true
+                        color: HomeCubit.get(context).myLikedByMe[index] == true
                             ? Colors.red
                             : null,
                       )),
@@ -666,7 +686,7 @@ Widget singlePersonPostBuilder(PostModel post, context, index) {
         ),
         Padding(
             padding:
-            const EdgeInsets.only(left: 12, right: 12, bottom: 8, top: 8),
+                const EdgeInsets.only(left: 12, right: 12, bottom: 8, top: 8),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
@@ -805,22 +825,19 @@ Widget singlePersonPostBuilder(PostModel post, context, index) {
                           true) {
                         HomeCubit.get(context).disLikePost(
                             HomeCubit.get(context).personPostsId[index]);
-                        HomeCubit.get(context).personIsLikedByMe[index] =
-                        false;
+                        HomeCubit.get(context).personIsLikedByMe[index] = false;
                         HomeCubit.get(context).personLikes[index]--;
                       } else {
                         HomeCubit.get(context).likePost(
                             HomeCubit.get(context).personPostsId[index]);
-                        HomeCubit.get(context).personIsLikedByMe[index] =
-                        true;
+                        HomeCubit.get(context).personIsLikedByMe[index] = true;
                         HomeCubit.get(context).personLikes[index]++;
                       }
                     },
                     icon: Icon(
                       Iconly_Broken.Heart,
-                      color:
-                      HomeCubit.get(context).personIsLikedByMe[index] ==
-                          true
+                      color: HomeCubit.get(context).personIsLikedByMe[index] ==
+                              true
                           ? Colors.red
                           : null,
                     )),
@@ -835,121 +852,129 @@ Widget singlePersonPostBuilder(PostModel post, context, index) {
 
 //replace every single follower by single user for inkwell is ready there
 Widget singleFollowerBuilder(UserModel user, context) => Padding(
-  padding: const EdgeInsets.all(12),
-  child: Row(
-    crossAxisAlignment: CrossAxisAlignment.center,
-    children: [
-     cacheImage(url: '${user.profileImage}',
-         width: 50,
-         height: 50,
-         shape: BoxShape.circle,
-     ),
-      SizedBox(
-        width: 10,
+      padding: const EdgeInsets.all(12),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.center,
+        children: [
+          cacheImage(
+            url: '${user.profileImage}',
+            width: 50,
+            height: 50,
+            shape: BoxShape.circle,
+          ),
+          SizedBox(
+            width: 10,
+          ),
+          Expanded(
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.start,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  '${user.name}',
+                  textAlign: TextAlign.start,
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  style: TextStyle(
+                      fontSize: 17,
+                      color: mainColor,
+                      fontWeight: FontWeight.w600),
+                ),
+                Text(
+                  '${HomeCubit.get(context).users.length - 1} mutual friends',
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  style: TextStyle(
+                      fontSize: 9,
+                      color: mainColor,
+                      fontWeight: FontWeight.w500),
+                ),
+              ],
+            ),
+          ),
+          Icon(
+            Iconly_Broken.Chat,
+            color: mainColor,
+          )
+        ],
       ),
-      Expanded(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.start,
-          crossAxisAlignment: CrossAxisAlignment.start,
+    );
+
+Widget singleUserBuilder(
+        UserModel user, BuildContext context, void Function()? onPressed) =>
+    Padding(
+      padding: const EdgeInsets.only(top: 12, left: 12, right: 12),
+      child: Container(
+        decoration: BoxDecoration(
+          color: white,
+          borderRadius: BorderRadius.circular(20),
+        ),
+        padding: EdgeInsets.all(12),
+        child: Row(
+          crossAxisAlignment: CrossAxisAlignment.center,
           children: [
-            Text(
-              '${user.name}',
-              textAlign: TextAlign.start,
-              maxLines: 1,
-              overflow: TextOverflow.ellipsis,
-              style: TextStyle(
-                  fontSize: 17,
-                  color: subColor,
-                  fontWeight: FontWeight.w600),
+            InkWell(
+                onTap: () {
+                  if (user.uid == uid) {
+                    navigateTo(context, ProfileScreen());
+                  } else {
+                    HomeCubit.get(context)
+                        .getAllPersonUsers(personUid: user.uid);
+                    HomeCubit.get(context)
+                        .getAnotherPersonData(personUid: user.uid);
+                    HomeCubit.get(context).getPersonPosts(personUid: user.uid);
+                    navigateTo(
+                        context,
+                        PersonProfileScreen(
+                          personUid: user.uid,
+                        ));
+                  }
+                },
+                child: cacheImage(
+                    url: '${user.profileImage}',
+                    width: 50,
+                    height: 50,
+                    shape: BoxShape.circle)),
+            SizedBox(
+              width: 10,
             ),
-            Text(
-              '${HomeCubit.get(context).users.length - 1} mutual friends',
-              maxLines: 1,
-              overflow: TextOverflow.ellipsis,
-              style: TextStyle(
-                  fontSize: 9,
+            Expanded(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.start,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    '${user.name}',
+                    textAlign: TextAlign.start,
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                    style: TextStyle(
+                        fontSize: 17,
+                        color: mainColor,
+                        fontWeight: FontWeight.w600),
+                  ),
+                  Text(
+                    '${HomeCubit.get(context).users.length - 1} mutual friends',
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                    style: TextStyle(
+                        fontSize: 9,
+                        color: mainColor,
+                        fontWeight: FontWeight.w500),
+                  ),
+                ],
+              ),
+            ),
+            IconButton(
+                onPressed: onPressed,
+                icon: Icon(
+                  Iconly_Broken.Send,
                   color: mainColor,
-                  fontWeight: FontWeight.w500),
-            ),
+                ))
           ],
         ),
       ),
-      Icon(Iconly_Broken.Chat,color: subColor,)
-    ],
-  ),
-);
-
-Widget singleUserBuilder(UserModel user, BuildContext context, void Function()? onPressed) => Padding(
-  padding: const EdgeInsets.only(top: 12, left: 12, right: 12),
-  child: Container(
-    decoration: BoxDecoration(
-      color: white,
-      borderRadius: BorderRadius.circular(20),
-    ),
-    padding: EdgeInsets.all(12),
-    child: Row(
-      crossAxisAlignment: CrossAxisAlignment.center,
-      children: [
-        InkWell(
-            onTap: () {
-              if (user.uid == uid) {
-                navigateTo(context, ProfileScreen());
-              } else {
-                HomeCubit.get(context).getAllPersonUsers(personUid: user.uid);
-                HomeCubit.get(context).getAnotherPersonData(personUid: user.uid);
-                HomeCubit.get(context).getPersonPosts(personUid: user.uid);
-                navigateTo(
-                    context,
-                    PersonProfileScreen(
-                      personUid: user.uid,
-                    ));
-              }
-            },
-            child: cacheImage(
-                url: '${user.profileImage}',
-                width: 50,
-                height: 50,
-                shape: BoxShape.circle)),
-        SizedBox(
-          width: 10,
-        ),
-        Expanded(
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.start,
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(
-                '${user.name}',
-                textAlign: TextAlign.start,
-                maxLines: 1,
-                overflow: TextOverflow.ellipsis,
-                style: TextStyle(
-                    fontSize: 17,
-                    color: mainColor,
-                    fontWeight: FontWeight.w600),
-              ),
-              Text(
-                '${HomeCubit.get(context).users.length - 1} mutual friends',
-                maxLines: 1,
-                overflow: TextOverflow.ellipsis,
-                style: TextStyle(
-                    fontSize: 9,
-                    color: mainColor,
-                    fontWeight: FontWeight.w500),
-              ),
-            ],
-          ),
-        ),
-        IconButton(
-            onPressed: onPressed,
-            icon: Icon(
-              Iconly_Broken.Send,
-              color: mainColor,
-            ))
-      ],
-    ),
-  ),
-);
+    );
 
 Widget onlinePersonBuilder(UserModel user, context) {
   return InkWell(
@@ -1000,10 +1025,10 @@ Widget onlinePersonBuilder(UserModel user, context) {
 }
 
 Widget personMessage(
-    RecentMessageModel r,
-    context,
-    index,
-    ) {
+  RecentMessageModel r,
+  context,
+  index,
+) {
   return Dismissible(
     background: Container(
       color: mainColor.withOpacity(0.5),
@@ -1150,12 +1175,66 @@ Widget cacheImage({
   );
 }
 
-
-Widget defaultIconButton({required IconData icon, required var function}) {
+Widget defaultIconButton(
+    {required IconData icon, required var function, color}) {
   return IconButton(
       onPressed: function,
       icon: Icon(
         icon,
-        color: black,
+        color: color == null ? Colors.black : color,
       ));
+}
+
+FloatingActionButton addPost(BuildContext context) {
+  return FloatingActionButton(
+    onPressed: () {
+      navigateTo(context, NewPostScreen());
+    },
+    child: Icon(Iconly_Broken.Edit),
+  );
+}
+
+Widget singlePhotoBuilder(String image, String body, context) {
+  return InkWell(
+    onTap: () {
+      navigateTo(context, ImageViewScreen(image: image, body: body));
+    },
+    child: Container(
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.only(
+          bottomRight: Radius.circular(0),
+          bottomLeft: Radius.circular(0),
+          topLeft: Radius.circular(0),
+          topRight: Radius.circular(0),
+        ),
+        image: DecorationImage(
+          fit: BoxFit.cover,
+          image: NetworkImage('$image'),
+        ),
+      ),
+      width: 70,
+      height: 70,
+    ),
+  );
+}
+
+Widget followersBuilder(context) {
+  return ListView.separated(
+      physics: NeverScrollableScrollPhysics(),
+      shrinkWrap: true,
+      itemBuilder: (context, index) => singleUserBuilder(
+            HomeCubit.get(context).users[index],
+            context,
+            () {
+              navigateTo(
+                  context,
+                  PersonChatScreen(
+                    HomeCubit.get(context).users[index],
+                  ));
+            },
+          ),
+      separatorBuilder: (context, index) => SizedBox(
+            height: 10,
+          ),
+      itemCount: HomeCubit.get(context).users.length);
 }
